@@ -29,7 +29,7 @@ public class UDPListener extends BaseListener{
 
                     int length = packet.getLength();
                     byte[] receivedData = new byte[length];
-                    System.arraycopy(buffer, 0, receivedData, 0);
+                    System.arraycopy(buffer, 0, receivedData, 0, length);
 
                     if (packetHandler != null) {
                         packetHandler.accept(receivedData);

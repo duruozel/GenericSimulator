@@ -5,30 +5,83 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import org.networkpacketgenerator.genericsimulator.constants.PacketConstants;
+import org.networkpacketgenerator.genericsimulator.facade.PacketVisualizer;
+import org.networkpacketgenerator.genericsimulator.model.PacketElement;
+import org.networkpacketgenerator.genericsimulator.model.PacketStructure;
 import org.networkpacketgenerator.genericsimulator.network.*;
+import org.networkpacketgenerator.genericsimulator.util.FormValidator;
+import org.networkpacketgenerator.genericsimulator.util.PacketDecoder;
 
 public class SimulatorController {
     @FXML private TextField ipTextField;
     @FXML private TextField portTextField;
     @FXML private ComboBox<String> protocolComboBox;
     @FXML private TextField DataTextField;
+    @FXML private ComboBox<String> dataTypeComboBox;
+    @FXML private ComboBox<String> endianComboBox;
     @FXML private Button sendButton;
 
-    private TCPListener tcpListener;
-    private UDPListener udpListener;
+    private BaseListener activeListener;
 
     @FXML
-    private void initialize(){
+    private void initialize() {
         protocolComboBox.getItems().addAll("TCP", "UDP");
         protocolComboBox.setPromptText("Protokol Tipini Seciniz");
 
-        int testPort=5005;
+        dataTypeComboBox.getItems().addAll("U8", "U16", "U32");
+        dataTypeComboBox.setPromptText("Veri Tipini Seciniz");
 
-        tcpListener = new TCPListener(testPort);
-        tcpListener.startListening();
+        endianComboBox.getItems().addAll("BIG_ENDIAN", "LITTLE_ENDIAN");
+        endianComboBox.setPromptText("Siralamayi Seciniz");
 
-        udpListener=new UDPListener(testPort);
-        udpListener.startListening();
+        final int listenPort = PacketConstants.LISTEN_PORT;
+
+        protocolComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                switchActiveListener(newValue, listenPort);
+            }
+        });
+
+    }
+
+    private String getSelectedDataType() {
+        return dataTypeComboBox.getValue();
+    }
+
+    private String getSelectedEndianType() {
+        return endianComboBox.getValue();
+    }
+
+    private PacketElement.EndianType getEndianType() {
+        String endianStr = getSelectedEndianType();
+        return endianStr != null ? PacketElement.EndianType.valueOf(endianStr) : PacketElement.EndianType.BIG_ENDIAN;
+    }
+    private void switchActiveListener(String protocol, int  port) {
+        if (activeListener != null) {
+            activeListener.stopListening();
+        }
+
+        if ("TCP".equals(protocol)) {
+            activeListener = new TCPListener(port, (receivedBytes) -> {
+                System.out.println("Controller, TCP uzerinden veri yakalandi");
+
+                String decodedValue = PacketDecoder.decode(receivedBytes);
+
+                System.out.println("Elimize gelen bilgiler: value: " + decodedValue + " dataType: " + getSelectedDataType() + " endian secimi: " + getSelectedEndianType());
+            });
+        } else if ("UDP".equals(protocol)) {
+            activeListener = new UDPListener(port, (receivedBytes) -> {
+                System.out.println("Controller, UDP uzerinden veri yakalandi.");
+                String decodedValue = PacketDecoder.decode(receivedBytes);
+
+                System.out.println("Elimize gelen bilgiler: value: " + decodedValue + " dataType: " + getSelectedDataType() + " endian secimi: " + getEndianType());
+            });
+
+        }
+
+        if (activeListener != null) {
+            activeListener.startListening();
+        }
 
     }
 
@@ -38,47 +91,28 @@ public class SimulatorController {
 
             String targetIp = ipTextField.getText() != null ? ipTextField.getText().trim() : "";
             String portText = portTextField.getText() != null ? portTextField.getText().trim() : "";
+            String rawInput = DataTextField.getText() != null ? DataTextField.getText().trim() : "";
             String selectedProtocol = protocolComboBox.getValue();
-            String hexInput = DataTextField.getText() != null ? DataTextField.getText().trim() : "";
 
-            if (targetIp.isEmpty() || portText.isEmpty() || hexInput.isEmpty()) {
-                System.err.println("Hata: IP, Port ve Hex Veri alanlari bos birakilamaz");
-                return;
-            }
+            FormValidator.validateForm(targetIp,portText,rawInput,selectedProtocol,getSelectedDataType(), getSelectedEndianType());
 
-            if (selectedProtocol == null || selectedProtocol.equals("Protokol Tipini Seciniz")) {
-                System.err.println("Hata: Lutfen bir protokol tipi (TCP/UDP) secin!");
-                return;
-            }
-            try {
-                java.net.InetAddress.getByName(targetIp);
-            } catch (Exception e) {
-                System.err.println("Hata: Gecersiz IP adresi");
-                return;
-            }
             int targetPort = Integer.parseInt(portText);
 
-            if (targetPort < PacketConstants.MIN_PORT || targetPort > PacketConstants.MAX_PORT) {
-                System.err.println("Hata: Port numarasi 0 ile 65535 arasinda olmalidir");
-                return;
-            }
+            PacketStructure structure = new PacketStructure();
+            structure.addElement(new PacketElement(rawInput, getSelectedDataType(), getEndianType()));
 
-            byte rawByte = (byte) Integer.parseInt(hexInput, 16);
+            byte[] dataToSend = PacketVisualizer.toNetworkBytes(structure);
 
-            BaseSender sender;
-            if ("TCP".equals(selectedProtocol)) {
-                sender = new TCPSender(targetIp, targetPort);
-            } else {
-                sender = new UDPSender(targetIp, targetPort);
-            }
+            BaseSender sender = "TCP".equals(selectedProtocol)
+                    ? new TCPSender(targetIp,targetPort)
+                    : new UDPSender(targetIp,targetPort);
+            sender.send(dataToSend);
 
-            sender.send(rawByte);
-
-        } catch (NumberFormatException e) {
-            System.err.println("Hata: Port sayisal olmali ve Hex veri gecerli (0-9, A-F) formatta olmalidir");
+        }catch (IllegalArgumentException e) {
+            System.err.println(e.getMessage());
         } catch (Exception e) {
-            System.err.println("Gonderim sirasinda beklenmedik bir hata: " + e.getMessage());
+            System.err.println("Gonderim hatasi: " + e.getMessage());
         }
-    }
 
+    }
 }

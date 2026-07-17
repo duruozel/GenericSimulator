@@ -9,4 +9,6 @@ public class PacketConstants {
 
     public static final int MIN_PORT = 0;
     public static final int MAX_PORT = 65535;
+
+    public static final int LISTEN_PORT = 5005;
 }

@@ -32,7 +32,7 @@ public class TCPListener extends BaseListener{
 
                         while ((bytesRead = input.read(buffer)) != -1) {
                             byte[] receivedData = new byte[bytesRead];
-                            System.arraycopy(buffer, 0, receivedData, 0);
+                            System.arraycopy(buffer, 0, receivedData, 0, bytesRead);
 
                             if(packetHandler!=null){
                                 packetHandler.accept(receivedData);
