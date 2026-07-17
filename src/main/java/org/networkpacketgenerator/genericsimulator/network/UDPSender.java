@@ -8,15 +8,15 @@ public class UDPSender extends BaseSender{
     }
 
     @Override
-    public void send(byte rawByte){
+    public void send(byte[] rawByte){
+
         try (DatagramSocket socket = new DatagramSocket()) {
-            byte[] data = new byte[]{ rawByte };
             InetAddress address = InetAddress.getByName(ip);
 
-            DatagramPacket packet = new DatagramPacket(data, data.length, address, port);
+            DatagramPacket packet = new DatagramPacket(rawByte, rawByte.length, address, port);
             socket.send(packet);
 
-            System.out.println("[UDP SENDER] " + String.format("0x%02X", rawByte) + " verisi gonderildi!");
+            System.out.println("[UDP SENDER] " + rawByte.length + " byte boyutunda paket gonderildi!");
         } catch (Exception e) {
             System.err.println("UDP gonderme hatasi: " + e.getMessage());
         }

@@ -9,5 +9,5 @@ public abstract class BaseSender {
         this.port=port;
     }
 
-    public abstract void send(byte rawByte);
+    public abstract void send(byte[] rawByte);
 }

@@ -10,13 +10,15 @@ public class TCPSender extends BaseSender {
     }
 
     @Override
-    public void send(byte rawByte){
+    public void send(byte[] rawByte){
         try (Socket socket = new Socket(ip, port);
              OutputStream output = socket.getOutputStream()) {
 
             output.write(rawByte);
             output.flush();
-            System.out.println("[TCP SENDER] " + String.format("0x%02X", rawByte) + " verisi gonderildi!");
+
+            System.out.println("TCP SENDER: " + rawByte.length + " byte boyutundaki paket basariyla gonderildi.");
+
         } catch (Exception e) {
             System.err.println("TCP gonderme hatasi: " + e.getMessage());
         }

@@ -32,8 +32,20 @@
         <ComboBox fx:id="protocolComboBox" prefWidth="120.0"/>
     </VBox>
 
+    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <VBox spacing="5.0">
+            <Label text="Veri Tipi (DataType):" style="-fx-font-weight: bold;"/>
+            <ComboBox fx:id="dataTypeComboBox" prefWidth="120.0"/>
+        </VBox>
+
+        <VBox spacing="5.0">
+            <Label text="Byte Siralamasi (Endian):" style="-fx-font-weight: bold;"/>
+            <ComboBox fx:id="endianComboBox" prefWidth="120.0"/>
+        </VBox>
+    </HBox>
+
     <VBox spacing="5.0">
-        <Label text="Gönderilecek Veri:" style="-fx-font-weight: bold;"/>
+        <Label text="Gonderilecek Veri:" style="-fx-font-weight: bold;"/>
         <TextField fx:id="DataTextField"/>
     </VBox>
 

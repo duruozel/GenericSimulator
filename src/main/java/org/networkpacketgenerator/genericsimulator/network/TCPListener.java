@@ -3,11 +3,15 @@ package org.networkpacketgenerator.genericsimulator.network;
 import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.function.Consumer;
 
 public class TCPListener extends BaseListener{
     private ServerSocket serverSocket;
-    public TCPListener(int port){
+    private final Consumer<byte[]> packetHandler;
+
+    public TCPListener(int port, Consumer<byte[]> packetHandler){
         super(port);
+        this.packetHandler=packetHandler;
     }
 
     @Override
@@ -23,9 +27,16 @@ public class TCPListener extends BaseListener{
                     System.out.println("[TCP LISTENER] baglandi: " + clientSocket.getRemoteSocketAddress());
 
                     try (InputStream input = clientSocket.getInputStream()) {
-                        int data;
-                        while ((data = input.read()) != -1) {
-                            System.out.println("[TCP LISTENER] veri yakalandi: " + String.format("0x%02X", data));
+                        byte[] buffer = new byte[1024];
+                        int bytesRead;
+
+                        while ((bytesRead = input.read(buffer)) != -1) {
+                            byte[] receivedData = new byte[bytesRead];
+                            System.arraycopy(buffer, 0, receivedData, 0);
+
+                            if(packetHandler!=null){
+                                packetHandler.accept(receivedData);
+                            }
                         }
                     } catch (Exception e) {
                         System.err.println("istemci verisi okunurken hata: " + e.getMessage());
