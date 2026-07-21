@@ -1,7 +1,6 @@
 package org.networkpacketgenerator.genericsimulator;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import org.networkpacketgenerator.genericsimulator.constants.PacketConstants;
@@ -19,7 +18,6 @@ public class SimulatorController {
     @FXML private TextField DataTextField;
     @FXML private ComboBox<String> dataTypeComboBox;
     @FXML private ComboBox<String> endianComboBox;
-    @FXML private Button sendButton;
 
     private BaseListener activeListener;
 
@@ -28,7 +26,7 @@ public class SimulatorController {
         protocolComboBox.getItems().addAll("TCP", "UDP");
         protocolComboBox.setPromptText("Protokol Tipini Seciniz");
 
-        dataTypeComboBox.getItems().addAll("U8", "U16", "U32");
+        dataTypeComboBox.getItems().addAll("U8", "U16", "U32", "U64");
         dataTypeComboBox.setPromptText("Veri Tipini Seciniz");
 
         endianComboBox.getItems().addAll("BIG_ENDIAN", "LITTLE_ENDIAN");

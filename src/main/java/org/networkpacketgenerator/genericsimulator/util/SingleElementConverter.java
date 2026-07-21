@@ -27,6 +27,10 @@ public class SingleElementConverter {
                     .order(order)
                     .putInt((int) numericValue)
                     .array();
+            case "U64" -> ByteBuffer.allocate(8)
+                    .order(order)
+                    .putLong((long) numericValue)
+                    .array();
             default -> throw new IllegalArgumentException("Donusturulemez veri tipi");
         };
     }

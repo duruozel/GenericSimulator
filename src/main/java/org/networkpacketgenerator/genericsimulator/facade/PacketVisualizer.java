@@ -1,6 +1,7 @@
 package org.networkpacketgenerator.genericsimulator.facade;
 
 import org.networkpacketgenerator.genericsimulator.model.PacketStructure;
+import org.networkpacketgenerator.genericsimulator.util.HexFormatterUtil;
 import org.networkpacketgenerator.genericsimulator.util.PacketConverter;
 
 import java.util.HexFormat;
@@ -12,9 +13,8 @@ public class PacketVisualizer {
 
         byte[] convertedBytes = PacketConverter.toByteArray(structure);
 
-        String hexResult = HexFormat.ofDelimiter(" ")
-                .withUpperCase()
-                .formatHex(convertedBytes);
+        String hexResult = HexFormatterUtil.bytesToHex(convertedBytes);
+
         System.out.println("\nPaketin gonderilmek icin uretilen hex hali:\n" + hexResult + "\n");
 
         return convertedBytes;

@@ -49,7 +49,7 @@
         <TextField fx:id="DataTextField"/>
     </VBox>
 
-    <Button fx:id="sendButton" text="Gonder" onAction="#onSendButtonClick"
+    <Button text="Gonder" onAction="#onSendButtonClick"
             prefWidth="150.0" style="-fx-font-size: 14px; -fx-cursor: hand;"/>
 
 </VBox>
