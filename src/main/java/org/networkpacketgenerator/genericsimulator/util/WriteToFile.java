@@ -12,8 +12,8 @@ public class WriteToFile {
 
         StringBuilder xmlContent = new StringBuilder();
 
-        xmlContent.append("<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?>\\n");
-        xmlContent.append("<Converted Elements>");
+        xmlContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        xmlContent.append("<ConvertedElements>");
 
         List<byte[]> items = convertedList.getValueList();
 
@@ -26,7 +26,7 @@ public class WriteToFile {
             xmlContent.append("    <Value>").append(hexData).append("</Value>\n");
             xmlContent.append("  </Entry>\n");
         }
-        xmlContent.append("</Converted Elements>");
+        xmlContent.append("</ConvertedElements>");
 
         try(FileWriter writer = new FileWriter(filePath)){
             writer.write(xmlContent.toString());

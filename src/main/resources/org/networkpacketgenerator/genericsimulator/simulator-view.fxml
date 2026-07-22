@@ -49,7 +49,18 @@
         <TextField fx:id="DataTextField"/>
     </VBox>
 
-    <Button text="Gonder" onAction="#onSendButtonClick"
-            prefWidth="150.0" style="-fx-font-size: 14px; -fx-cursor: hand;"/>
+    <HBox spacing="10.0" alignment="CENTER">
+
+        <Button text="Gonder"
+                onAction="#onSendButtonClick"
+                prefWidth="150.0"
+                style="-fx-font-size: 14px; -fx-cursor: hand;"/>
+
+
+        <Button text="XML Dosyasini Goster"
+                onAction="#onShowXmlButtonClick"
+                prefWidth="180.0"
+                style="-fx-font-size: 14px; -fx-cursor: hand;"/>
+    </HBox>
 
 </VBox>

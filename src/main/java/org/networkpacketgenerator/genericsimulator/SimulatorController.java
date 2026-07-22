@@ -5,11 +5,17 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import org.networkpacketgenerator.genericsimulator.constants.PacketConstants;
 import org.networkpacketgenerator.genericsimulator.facade.PacketVisualizer;
+import org.networkpacketgenerator.genericsimulator.model.ConvertedValueList;
 import org.networkpacketgenerator.genericsimulator.model.PacketElement;
 import org.networkpacketgenerator.genericsimulator.model.PacketStructure;
 import org.networkpacketgenerator.genericsimulator.network.*;
 import org.networkpacketgenerator.genericsimulator.util.FormValidator;
 import org.networkpacketgenerator.genericsimulator.util.PacketDecoder;
+import org.networkpacketgenerator.genericsimulator.util.WriteToFile;
+import view.XmlViewerWindow;
+
+import java.io.File;
+import java.io.IOException;
 
 public class SimulatorController {
     @FXML private TextField ipTextField;
@@ -83,6 +89,8 @@ public class SimulatorController {
 
     }
 
+    private static final String xml_File_Path = "output_message.xml";
+
     @FXML
     private void onSendButtonClick() {
         try {
@@ -101,6 +109,12 @@ public class SimulatorController {
 
             byte[] dataToSend = PacketVisualizer.toNetworkBytes(structure);
 
+            if(dataToSend.length>0){
+               ConvertedValueList.getInstance().addList(dataToSend);
+                WriteToFile.saveToXml(ConvertedValueList.getInstance(),xml_File_Path);
+            }
+
+
             BaseSender sender = "TCP".equals(selectedProtocol)
                     ? new TCPSender(targetIp,targetPort)
                     : new UDPSender(targetIp,targetPort);
@@ -112,5 +126,24 @@ public class SimulatorController {
             System.err.println("Gonderim hatasi: " + e.getMessage());
         }
 
+    }
+
+    @FXML
+    private void onShowXmlButtonClick(){
+        try{
+            java.io.File xmlFile = new java.io.File(xml_File_Path);
+
+            if(!xmlFile.exists() || xmlFile.length()==0){
+                System.out.println("Dosyaya henuz yazilmamis");
+                return;
+            }
+
+            String xmlContent = java.nio.file.Files.readString(xmlFile.toPath());
+
+            XmlViewerWindow.display(xmlContent);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

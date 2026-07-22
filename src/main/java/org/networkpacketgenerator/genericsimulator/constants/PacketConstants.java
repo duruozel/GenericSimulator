@@ -1,5 +1,7 @@
 package org.networkpacketgenerator.genericsimulator.constants;
 
+import java.math.BigInteger;
+
 public class PacketConstants {
     private PacketConstants() {}
 

@@ -1,16 +1,15 @@
 package org.networkpacketgenerator.genericsimulator.util;
 
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import org.networkpacketgenerator.genericsimulator.constants.PacketConstants;
 import org.networkpacketgenerator.genericsimulator.model.PacketElement;
+
+import java.math.BigInteger;
 
 public class PacketValidator {
 
     public record ValidatedData(String value, String dataType){}
 
-    @Contract("_, _, _ -> new")
-    public static @NotNull ValidatedData normalizeAndValidate(@NotNull String value, @NotNull String dataType, PacketElement.EndianType endian) throws IllegalArgumentException{
+    public static ValidatedData normalizeAndValidate(String value, String dataType, PacketElement.EndianType endian) throws IllegalArgumentException{
         String cleanValue = value.trim();
         String cleanDataType = dataType.toUpperCase().trim();
 
@@ -24,40 +23,53 @@ public class PacketValidator {
             throw new IllegalArgumentException("Endian secimi zorunludur.");
         }
 
-        long valueToValidate = parseAndCheckNegative(cleanValue);
+        BigInteger valueToValidate = parseAndCheckNegative(cleanValue);
+
         switch (cleanDataType) {
             case "U8":
-                if (valueToValidate > PacketConstants.U8_MAX_VALUE) {
-                    throw new IllegalArgumentException("Tasma hatasi: U8 alani en fazla 255 tutabilir! Girilen: " + valueToValidate);
+                BigInteger u8Max = BigInteger.valueOf(PacketConstants.U8_MAX_VALUE);
+                if (valueToValidate.compareTo(u8Max) > 0) {
+                    throw new IllegalArgumentException("Tasma hatasi: U8 alani en fazla 255 tutabilir! Girilen: " + cleanValue);
                 }
                 break;
             case "U16":
-                if (valueToValidate > PacketConstants.U16_MAX_VALUE) {
-                    throw new IllegalArgumentException("Tasma hatasi: U16 alani en fazla 65535 tutabilir! Girilen: " + valueToValidate);
+                BigInteger u16Max = BigInteger.valueOf(PacketConstants.U16_MAX_VALUE);
+                if (valueToValidate.compareTo(u16Max) > 0) {
+                    throw new IllegalArgumentException("Tasma hatasi: U16 alani en fazla 65535 tutabilir! Girilen: " + cleanValue);
                 }
                 break;
             case "U32":
-                if (valueToValidate > PacketConstants.U32_MAX_VALUE) {
-                    throw new IllegalArgumentException("Tasma hatasi: U32 alani en fazla 4294967295 tutabilir! Girilen: " + valueToValidate);
+                BigInteger u32Max = BigInteger.valueOf(PacketConstants.U32_MAX_VALUE);
+                if (valueToValidate.compareTo(u32Max) > 0) {
+                    throw new IllegalArgumentException("Tasma hatasi: U32 alani en fazla 4294967295 tutabilir! Girilen: " + cleanValue);
+                }
+                break;
+            case "U64":
+                BigInteger u64Max = new BigInteger("18446744073709551615");
+                if (valueToValidate.compareTo(u64Max) > 0) {
+                    throw new IllegalArgumentException("Tasma hatasi: U64 alani en fazla 18446744073709551615 tutabilir! Girilen: " + cleanValue);
                 }
                 break;
             default:
-                throw new IllegalArgumentException("Tip Hatası: Sadece U8, U16 ve U32 tipleri desteklenmektedir.");
+                throw new IllegalArgumentException("Tip Hatası: Sadece U8, U16, U32 ve U64 tipleri desteklenmektedir.");
         }
 
         return new ValidatedData(cleanValue, cleanDataType);
     }
 
-    public static long parseAndCheckNegative(String cleanValue){
-        long parsedValue;
-        try{
-            parsedValue = Long.parseLong(cleanValue);
+    public static BigInteger parseAndCheckNegative(String cleanValue) {
+        BigInteger parsedValue;
+        try {
+            parsedValue = new BigInteger(cleanValue);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Girdiginiz deger tam sayi degil.");
+            throw new IllegalArgumentException("Girdiginiz deger geçerli bir tam sayi degil.");
         }
-        if(parsedValue<0){
-            throw new IllegalArgumentException("Unsigned icin negatif deger giremezsiniz.");
+
+        if (parsedValue.compareTo(BigInteger.ZERO) < 0) {
+            throw new IllegalArgumentException("Unsigned tipler için negatif deger giremezsiniz.");
         }
+
         return parsedValue;
     }
 }
+
