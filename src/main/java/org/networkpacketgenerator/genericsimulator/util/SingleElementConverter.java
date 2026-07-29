@@ -1,6 +1,5 @@
 package org.networkpacketgenerator.genericsimulator.util;
 
-import org.jetbrains.annotations.NotNull;
 import org.networkpacketgenerator.genericsimulator.model.PacketElement;
 
 import java.nio.ByteBuffer;
@@ -9,7 +8,7 @@ import java.nio.ByteOrder;
 public class SingleElementConverter {
     private SingleElementConverter() {}
 
-    public static byte @NotNull [] convert(@NotNull PacketElement element){
+    public static byte [] convert( PacketElement element){
         long numericValue = Long.parseLong(element.getValue());
         String dataType = element.getDataType();
 

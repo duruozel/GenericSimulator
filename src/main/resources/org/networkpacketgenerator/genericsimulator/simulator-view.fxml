@@ -27,40 +27,39 @@
         </VBox>
     </HBox>
 
-    <VBox spacing="5.0">
-        <Label text="Protokol Tipi:" style="-fx-font-weight: bold;"/>
-        <ComboBox fx:id="protocolComboBox" prefWidth="120.0"/>
-    </VBox>
+    <HBox spacing="20" alignment="CENTER_LEFT">
 
-    <HBox spacing="10.0" alignment="CENTER_LEFT">
-        <VBox spacing="5.0">
-            <Label text="Veri Tipi (DataType):" style="-fx-font-weight: bold;"/>
-            <ComboBox fx:id="dataTypeComboBox" prefWidth="120.0"/>
+        <VBox spacing="5" alignment="CENTER_LEFT">
+            <Label text="Protocol:" style="-fx-font-weight: bold;" />
+            <ComboBox fx:id="protocolComboBox" prefWidth="150.0" />
         </VBox>
 
-        <VBox spacing="5.0">
-            <Label text="Byte Siralamasi (Endian):" style="-fx-font-weight: bold;"/>
-            <ComboBox fx:id="endianComboBox" prefWidth="120.0"/>
+        <VBox spacing="5" alignment="CENTER_LEFT">
+            <Label text="Endian:" style="-fx-font-weight: bold;" />
+            <ComboBox fx:id="endianComboBox" prefWidth="150.0" />
         </VBox>
+
     </HBox>
 
-    <VBox spacing="5.0">
-        <Label text="Gonderilecek Veri:" style="-fx-font-weight: bold;"/>
-        <TextField fx:id="DataTextField"/>
-    </VBox>
+    <HBox spacing="10.0" alignment="BOTTOM_LEFT">
+
+
+        <Button text="+"
+                onAction="#onAddRowButtonClick"
+                style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-cursor: hand;"/>
+    </HBox>
+
+    <VBox fx:id="dynamicRowsVBox" spacing="10.0"/>
 
     <HBox spacing="10.0" alignment="CENTER">
-
         <Button text="Gonder"
                 onAction="#onSendButtonClick"
                 prefWidth="150.0"
                 style="-fx-font-size: 14px; -fx-cursor: hand;"/>
-
 
         <Button text="XML Dosyasini Goster"
                 onAction="#onShowXmlButtonClick"
                 prefWidth="180.0"
                 style="-fx-font-size: 14px; -fx-cursor: hand;"/>
     </HBox>
-
 </VBox>

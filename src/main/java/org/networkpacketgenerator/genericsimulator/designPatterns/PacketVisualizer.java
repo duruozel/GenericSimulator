@@ -1,10 +1,8 @@
-package org.networkpacketgenerator.genericsimulator.facade;
+package org.networkpacketgenerator.genericsimulator.designPatterns;
 
 import org.networkpacketgenerator.genericsimulator.model.PacketStructure;
 import org.networkpacketgenerator.genericsimulator.util.HexFormatterUtil;
 import org.networkpacketgenerator.genericsimulator.util.PacketConverter;
-
-import java.util.HexFormat;
 
 public class PacketVisualizer {
     private PacketVisualizer(){}
