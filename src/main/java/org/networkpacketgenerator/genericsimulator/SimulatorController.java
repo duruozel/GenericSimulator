@@ -43,15 +43,6 @@ public class SimulatorController {
         endianComboBox.getItems().addAll("BIG_ENDIAN", "LITTLE_ENDIAN");
         endianComboBox.setPromptText("Siralamayi Seciniz");
 
-        endianComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null && dynamicRowsVBox != null && !dynamicRowsVBox.getChildren().isEmpty()) {
-                Node lastNode = dynamicRowsVBox.getChildren().getLast();
-                if (lastNode instanceof HBox lastRow) {
-                    lastRow.setUserData(PacketElement.EndianType.valueOf(newValue));
-                }
-            }
-        });
-
         final int listenPort = PacketConstants.LISTEN_PORT;
         protocolComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
@@ -93,7 +84,7 @@ public class SimulatorController {
 
     @FXML
     private void onAddRowButtonClick() {
-        HBox newRow = UIElementFactory.createDynamicRow(getEndianType());
+        HBox newRow = UIElementFactory.createDynamicRow();
         if (dynamicRowsVBox != null) {
             dynamicRowsVBox.getChildren().add(newRow);
         }
@@ -114,14 +105,13 @@ public class SimulatorController {
 
                         String dataType = UIElementFactory.getDataType(row);
                         String rawInput = UIElementFactory.getValue(row);
-                        PacketElement.EndianType rowEndian = UIElementFactory.getEndianType(row);
 
                         if (rawInput.isBlank()) {
                             continue;
                         }
 
-                        FormValidator.validateForm(targetIp, portText, rawInput, selectedProtocol, dataType, rowEndian.name());
-                        structure.addElement(new PacketElement(rawInput, dataType, rowEndian));
+                        FormValidator.validateForm(targetIp, portText, rawInput, selectedProtocol, dataType, getSelectedEndianType());
+                        structure.addElement(new PacketElement(rawInput, dataType, getEndianType()));
                     }
                 }
             }

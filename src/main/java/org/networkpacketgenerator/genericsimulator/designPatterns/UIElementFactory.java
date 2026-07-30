@@ -10,7 +10,7 @@ public class UIElementFactory {
 
     private UIElementFactory() {}
 
-    public static HBox createDynamicRow(PacketElement.EndianType currentEndian) {
+    public static HBox createDynamicRow() {
         HBox row = new HBox(10);
         row.setAlignment(Pos.CENTER_LEFT);
 
@@ -24,8 +24,6 @@ public class UIElementFactory {
         dynamicTextField.setPrefWidth(150);
 
         row.getChildren().addAll(dynamicDataType, dynamicTextField);
-
-        row.setUserData(currentEndian);
 
         return row;
     }
@@ -41,11 +39,4 @@ public class UIElementFactory {
         return field.getText() != null ? field.getText().trim() : "";
     }
 
-    public static PacketElement.EndianType getEndianType(HBox row) {
-        Object data = row.getUserData();
-        if (data instanceof PacketElement.EndianType endian) {
-            return endian;
-        }
-        return PacketElement.EndianType.BIG_ENDIAN;
-    }
 }
