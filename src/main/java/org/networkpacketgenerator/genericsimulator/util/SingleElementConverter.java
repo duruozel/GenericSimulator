@@ -2,35 +2,47 @@ package org.networkpacketgenerator.genericsimulator.util;
 
 import org.networkpacketgenerator.genericsimulator.model.PacketElement;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 
 public class SingleElementConverter {
     private SingleElementConverter() {}
 
-    public static byte [] convert( PacketElement element){
-        long numericValue = Long.parseLong(element.getValue());
-        String dataType = element.getDataType();
+    public static byte[] convert(PacketElement element) {
+        String dataType = element.getDataType().toUpperCase().trim();
+        String rawValue = element.getValue();
 
-        ByteOrder order = (element.getEndian()==PacketElement.EndianType.BIG_ENDIAN )
+        if ("STRING".equals(dataType)) {
+            return rawValue.getBytes(StandardCharsets.UTF_8);
+        }
+
+        BigInteger numericValue = new BigInteger(rawValue);
+
+        ByteOrder order = (element.getEndian() == PacketElement.EndianType.BIG_ENDIAN)
                 ? ByteOrder.BIG_ENDIAN
                 : ByteOrder.LITTLE_ENDIAN;
 
         return switch (dataType) {
-            case "U8" -> new byte[]{(byte) numericValue};
-            case "U16" -> ByteBuffer.allocate(2)
+            case "U8", "S8" -> new byte[]{ numericValue.byteValue() };
+
+            case "U16", "S16" -> ByteBuffer.allocate(2)
                     .order(order)
-                    .putShort((short) numericValue)
+                    .putShort(numericValue.shortValue())
                     .array();
-            case "U32" -> ByteBuffer.allocate(4)
+
+            case "U32", "S32" -> ByteBuffer.allocate(4)
                     .order(order)
-                    .putInt((int) numericValue)
+                    .putInt(numericValue.intValue())
                     .array();
-            case "U64" -> ByteBuffer.allocate(8)
+
+            case "U64", "S64" -> ByteBuffer.allocate(8)
                     .order(order)
-                    .putLong((long) numericValue)
+                    .putLong(numericValue.longValue())
                     .array();
-            default -> throw new IllegalArgumentException("Donusturulemez veri tipi");
+
+            default -> throw new IllegalArgumentException("Donusturulemez veri tipi: " + dataType);
         };
     }
 }

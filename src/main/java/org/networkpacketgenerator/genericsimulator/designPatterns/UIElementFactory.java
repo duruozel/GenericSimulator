@@ -14,7 +14,11 @@ public class UIElementFactory {
         row.setAlignment(Pos.CENTER_LEFT);
 
         ComboBox<String> dynamicDataType = new ComboBox<>();
-        dynamicDataType.getItems().addAll("U8", "U16", "U32", "U64");
+        dynamicDataType.getItems().addAll(
+                "U8", "U16", "U32", "U64",
+                "S8", "S16", "S32", "S64",
+                "STRING"
+        );
         dynamicDataType.setPromptText("Veri Tipi");
         dynamicDataType.setPrefWidth(120);
 
@@ -26,7 +30,6 @@ public class UIElementFactory {
 
         return row;
     }
-
 
     public static String getDataType(HBox row) {
         ComboBox<String> box = (ComboBox<String>) row.getChildren().getFirst();
